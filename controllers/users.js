@@ -26,7 +26,12 @@ module.exports.findUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка на сервере' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
+      }
+      return res.status(500).send({ message: 'Произошла ошибка на сервере' });
+    });
 };
 
 const updateUser = (req, res) => {
