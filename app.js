@@ -22,7 +22,7 @@ app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
 app.use('/', (req, res) => {
-  res.status(400).send({ message: 'Некорректный путь' });
+  res.status(404).send({ message: 'Некорректный путь' });
 });
 
 app.listen(PORT);
