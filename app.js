@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { NotFound } = require('./utils/constants');
+const { errors } = require('celebrate');
+const NotFoundError = require('./errors/NotFound');
+const auth = require('./middlewares/auth');
+const ErrorHandler = require('./errors/ErrorHandler');
 
 const { PORT = 3000 } = process.env;
 
@@ -12,18 +15,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mydb');
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63c44412a3541ad5b69d9571',
-  };
-  next();
-});
+app.use('/', require('./routes/auth'));
 
+app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
-app.use('/', (req, res) => {
-  res.status(NotFound).send({ message: 'Некорректный путь' });
+app.use('/', (req, res, next) => {
+  next(new NotFoundError('Неправильный путь'));
 });
+
+app.use(errors());
+app.use(ErrorHandler);
 
 app.listen(PORT);
