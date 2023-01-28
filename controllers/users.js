@@ -24,7 +24,12 @@ module.exports.createUser = (req, res, next) => {
       about,
       avatar,
     }))
-    .then((user) => res.send(user))
+    .then(() => res.send({
+      name,
+      email,
+      about,
+      avatar,
+    }))
     .catch((err) => {
       if (err.code === 11000) { next(new ConflictError('Пользователь с таким email уже существует')); }
       if (err.name === 'ValidationError') { next(new BadRequestError('Переданы некорректные данные')); }
