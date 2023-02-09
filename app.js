@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
@@ -22,9 +23,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect(MONGODB);
 
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://places.nomoredomainsclub.ru'],
+  methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PUT', 'PATCH'],
+}));
+
 app.use(helmet());
 app.use(limiter);
 app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 app.use('/', require('./routes/auth'));
 
 app.use(auth);
